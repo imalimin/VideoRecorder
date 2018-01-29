@@ -2,6 +2,15 @@
 
 buildscript {
     ext.kotlin_version = '1.2.10'
+    //gradle版本，sdk版本，兼容库版本
+    ext.compileSdkVersion = 26
+    ext.minSdkVersion = 16
+    ext.targetSdkVersion = 26
+    ext.supportVersion = "26.0.0"
+    //应用版本号
+    ext.versionCode = 46
+    ext.versionName = "2.7"
+
     repositories {
         google()
         jcenter()
