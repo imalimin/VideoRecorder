@@ -1,2 +1,2 @@
-# VideoRecoder
-Android video recoder and player
+# VideoRecorder
+Android video recorder and player
