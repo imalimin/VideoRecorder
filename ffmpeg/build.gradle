@@ -12,7 +12,7 @@ android {
 
         ndk {
             moduleName "ffmpeg"
-            abiFilters "armeabi", "armeabi-v7a"  //输出指定abi体系结构下的so库
+            abiFilters "armeabi"//输出指定abi体系结构下的so库
         }
         sourceSets.main {
             jni.srcDirs = []
