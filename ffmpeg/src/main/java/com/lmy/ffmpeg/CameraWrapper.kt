@@ -69,6 +69,7 @@ class CameraWrapper private constructor(expectWidth: Int, expectHeight: Int, fac
         val params = mCamera!!.parameters
         setRate(params)
         setSize(params)
+        params.focusMode = Camera.Parameters.FOCUS_MODE_AUTO
         mCamera!!.parameters = params
         mCamera!!.setDisplayOrientation(90)
     }

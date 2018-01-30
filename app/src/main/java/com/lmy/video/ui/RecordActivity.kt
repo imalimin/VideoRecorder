@@ -44,8 +44,7 @@ class RecordActivity : BaseActivity(), View.OnClickListener {
 
         override fun surfaceChanged(p0: SurfaceHolder?, p1: Int, p2: Int, p3: Int) {
             Log.v("000", "surfaceChanged")
-            mCameraWrapper = CameraWrapper.build(750, 480)
-            mCameraWrapper?.setPreviewCallback(this)
+            mCameraWrapper?.stopPreview()
             if (null != p0)
                 mCameraWrapper?.startPreview(p0)
         }
@@ -57,6 +56,10 @@ class RecordActivity : BaseActivity(), View.OnClickListener {
 
         override fun surfaceCreated(p0: SurfaceHolder?) {
             Log.v("000", "surfaceCreated")
+            mCameraWrapper = CameraWrapper.build(750, 480)
+            mCameraWrapper?.setPreviewCallback(this)
+            if (null != p0)
+                mCameraWrapper?.startPreview(p0)
         }
     }
 }
