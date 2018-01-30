@@ -19,7 +19,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 #include $(CLEAR_VARS)
 #LOCAL_MODULE := avdevice
-#LOCAL_SRC_FILES := libavdevice-57.so
+#LOCAL_SRC_FILES := libavdevice-56.so
 #include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -65,5 +65,5 @@ endif
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 LOCAL_LDLIBS := -llog -lz -ljnigraphics -landroid -lm -pthread
-LOCAL_SHARED_LIBRARIES := avcodec avfilter avformat avutil swresample swscale libyuv
+LOCAL_SHARED_LIBRARIES := avcodec avdevice avfilter avformat avutil swresample swscale libyuv
 include $(BUILD_SHARED_LIBRARY)
