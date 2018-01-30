@@ -21,7 +21,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         when (view.id) {
             R.id.infoBtn -> startActivity(Intent(this, InfoActivity::class.java))
             R.id.playBtn -> startActivity(Intent(this, PlayActivity::class.java))
-            R.id.recordBtn -> startActivity(Intent(this, PlayActivity::class.java))
+            R.id.recordBtn -> startActivity(Intent(this, RecordActivity::class.java))
         }
     }
 
