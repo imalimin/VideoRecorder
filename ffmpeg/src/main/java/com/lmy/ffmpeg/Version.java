@@ -7,7 +7,7 @@ package com.lmy.ffmpeg;
 public class Version {
     static {
         System.loadLibrary("avcodec-56");
-        System.loadLibrary("avdevice-56");
+//        System.loadLibrary("avdevice-56");
         System.loadLibrary("avfilter-5");
         System.loadLibrary("avformat-56");
         System.loadLibrary("avutil-54");
