@@ -16,6 +16,9 @@
 #ifdef ANDROID
 #include <jni.h>
 #include <android/log.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/opt.h>
+
 #define LOGE(format, ...)  __android_log_print(ANDROID_LOG_ERROR, "JNI", format, ##__VA_ARGS__)
 #define LOGI(format, ...)  __android_log_print(ANDROID_LOG_INFO,  "JNI", format, ##__VA_ARGS__)
 #else
@@ -154,6 +157,28 @@ static void audio_swr_init(){
     }
 }
 
+void init_frame(JNIEnv *env, AVFrame* av, jobject frame){
+    if(frame == NULL){
+        LOGE("AVFrame is NULL!");
+        return;
+    }
+
+    jfieldID  fieldId;
+    jclass cls = (*env)->GetObjectClass(env, frame);//获得Java层该对象实例的类引用
+    fieldId = (*env)->GetFieldID(env, cls , "width" , "I");//获得属性句柄
+    (*env)->SetIntField(env, frame , fieldId, av -> width);//设置属性值
+    fieldId = (*env)->GetFieldID(env, cls , "height" , "I");
+    (*env)->SetIntField(env, frame , fieldId, av -> height);
+    fieldId = (*env)->GetFieldID(env, cls , "format" , "I");
+    (*env)->SetIntField(env, frame , fieldId, av -> format);
+    fieldId = (*env)->GetFieldID(env, cls , "sample_rate" , "I");
+    (*env)->SetIntField(env, frame , fieldId, av -> sample_rate);
+    fieldId = (*env)->GetFieldID(env, cls , "nb_samples" , "I");
+    (*env)->SetIntField(env, frame , fieldId, av -> nb_samples);
+    fieldId = (*env)->GetFieldID(env, cls , "channels" , "I");
+    (*env)->SetIntField(env, frame , fieldId, av -> channels);
+}
+
 static void swap_frame(JNIEnv *env, AVFrame* av, jobject frame){
     if(frame == NULL){
         LOGE("AVFrame is NULL!");
@@ -204,28 +229,6 @@ static void swap_frame(JNIEnv *env, AVFrame* av, jobject frame){
     LOGI("swap_frame time = %d", (long)((clock() - start)/1000));
 }
 
-void init_frame(JNIEnv *env, AVFrame* av, jobject frame){
-    if(frame == NULL){
-        LOGE("AVFrame is NULL!");
-        return;
-    }
-
-    jfieldID  fieldId;
-    jclass cls = (*env)->GetObjectClass(env, frame);//获得Java层该对象实例的类引用
-    fieldId = (*env)->GetFieldID(env, cls , "width" , "I");//获得属性句柄
-    (*env)->SetIntField(env, frame , fieldId, av -> width);//设置属性值
-    fieldId = (*env)->GetFieldID(env, cls , "height" , "I");
-    (*env)->SetIntField(env, frame , fieldId, av -> height);
-    fieldId = (*env)->GetFieldID(env, cls , "format" , "I");
-    (*env)->SetIntField(env, frame , fieldId, av -> format);
-    fieldId = (*env)->GetFieldID(env, cls , "sample_rate" , "I");
-    (*env)->SetIntField(env, frame , fieldId, av -> sample_rate);
-    fieldId = (*env)->GetFieldID(env, cls , "nb_samples" , "I");
-    (*env)->SetIntField(env, frame , fieldId, av -> nb_samples);
-    fieldId = (*env)->GetFieldID(env, cls , "channels" , "I");
-    (*env)->SetIntField(env, frame , fieldId, av -> channels);
-}
-
 static void swap_audio_frame(JNIEnv *env, AVFrame* av, jobject frame){
     if(frame == NULL){
         LOGE("AVFrame is NULL!");
@@ -237,7 +240,7 @@ static void swap_audio_frame(JNIEnv *env, AVFrame* av, jobject frame){
     if (data_size < 0) {
         /* This should not occur, checking just for paranoia */
         LOGE("Failed to calculate data size\n");
-        return (jint)-1;
+        return;
     }
 
     jfieldID  fieldId;
