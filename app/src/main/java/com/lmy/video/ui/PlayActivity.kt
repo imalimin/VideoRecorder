@@ -17,7 +17,7 @@ class PlayActivity : BaseActivity(), View.OnClickListener {
 
     override fun initView() {
         enterBtn.setOnClickListener(this)
-        videoView.setDataSource("/storage/emulated/0/清湾延时-1080.mp4")
+        videoView.setDataSource("/storage/emulated/0/out.mp4")
     }
 
     override fun onClick(view: View) {
