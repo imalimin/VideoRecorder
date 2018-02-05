@@ -64,10 +64,9 @@ static void crop_frame(uint8_t *src) {
 static void convert_frame(uint8_t *src) {
     //1280x720 crop to 480x720
     crop_frame(src);
-    int size = width * height;
     //480x720 rotate to 720x480
     NV12ToI420Rotate(buffer, height,
-                     buffer + size, height,
+                     buffer + y_size, height,
                      pFrame->data[0], width,
                      pFrame->data[2], width / 2,
                      pFrame->data[1], width / 2,
