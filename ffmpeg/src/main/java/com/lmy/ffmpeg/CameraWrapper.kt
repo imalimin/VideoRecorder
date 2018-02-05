@@ -1,5 +1,6 @@
 package com.lmy.ffmpeg
 
+import android.graphics.PixelFormat
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
 import android.util.Log
@@ -70,6 +71,7 @@ class CameraWrapper private constructor(expectWidth: Int, expectHeight: Int, fac
         setRate(params)
         setSize(params)
         params.focusMode = Camera.Parameters.FOCUS_MODE_AUTO
+        Log.v(TAG, "format: ${params.previewFormat}, ${PixelFormat.YCbCr_420_SP}")
         mCamera!!.parameters = params
         mCamera!!.setDisplayOrientation(90)
     }
@@ -101,8 +103,8 @@ class CameraWrapper private constructor(expectWidth: Int, expectHeight: Int, fac
             Log.v(TAG, "${it?.width}, ${it?.height}")
         }
         Collections.sort(sizes, { lhs, rhs ->
-            val w = lhs.width - rhs.width
-            if (w == 0) lhs.height - rhs.height else w
+            val w = lhs.height - rhs.height
+            if (w == 0) lhs.width - rhs.width else w
         })
 
         return sizes.firstOrNull { it.width >= mExpectWidth && it.height >= mExpectHeight }
@@ -110,6 +112,7 @@ class CameraWrapper private constructor(expectWidth: Int, expectHeight: Int, fac
 
     fun setPreviewCallback(callback: Camera.PreviewCallback) {
         if (previewing) throw  RuntimeException("Must call before startPreview")
+//        mCamera!!.addCallbackBuffer(mBuffer)
         mCamera!!.setPreviewCallback(callback)
     }
 
@@ -170,6 +173,10 @@ class CameraWrapper private constructor(expectWidth: Int, expectHeight: Int, fac
             mCamera?.release()
             mCamera = null
         }
+    }
+
+    fun getCameraSize(): Camera.Size {
+        return mCameraSize!!
     }
 
     //保证从大到小排列
