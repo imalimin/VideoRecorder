@@ -31,7 +31,7 @@
 #define LOGI(format, ...)  printf("JNI" format "\n", ##__VA_ARGS__)
 #endif
 
-char output[500] = {0};
+const char *output;
 AVFormatContext *pFormatCtx;
 AVOutputFormat *fmt;
 AVStream *video_st;
@@ -46,6 +46,13 @@ int frame_count = 0;
 int width = 0, height = 0;
 int src_width = 0, src_height = 0;
 const uint8_t *buffer;
+
+static long long get_now() {
+    struct timeval xTime;
+    gettimeofday(&xTime, NULL);
+    long long xFactor = 1;
+    return (xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000);
+}
 
 static void crop_frame(uint8_t *src) {
     int i = 0, offset = (src_width - height) / 2;
@@ -67,10 +74,7 @@ static void convert_frame(uint8_t *src) {
                      height, width, kRotate90);
 }
 
-JNIEXPORT jint JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_init
-        (JNIEnv *env, jobject thiz, jstring out_path, jint s_w, jint s_h, jint w,
-         jint h) {
-    sprintf(output, "%s", (*env)->GetStringUTFChars(env, out_path, NULL));
+static int init(jint s_w, jint s_h, jint w, jint h) {
     width = w;
     height = h;
     src_width = s_w;
@@ -147,10 +151,18 @@ JNIEXPORT jint JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_init
     return 0;
 }
 
-JNIEXPORT void JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_encode
-        (JNIEnv *env, jobject thiz, jbyteArray data) {
-    uint8_t *data_p = (uint8_t *) (*env)->GetByteArrayElements(env, data,
-                                                               NULL); //jbyteArray转为jbyte*
+JNIEXPORT jint JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_init
+        (JNIEnv *env, jobject thiz, jstring out_path, jint s_w, jint s_h, jint w,
+         jint h) {
+    output = (*env)->GetStringUTFChars(env, out_path, NULL);
+
+    int ret = init(s_w, s_h, w, h);
+
+    (*env)->ReleaseStringUTFChars(env, out_path, output);
+    return ret;
+}
+
+static void encode(uint8_t *data_p) {
     LOGI("encoding...");
     convert_frame(data_p);
 //    pFrame->pts = frame_count * (video_st->time_base.den) / ((video_st->time_base.num) * 25);
@@ -171,6 +183,19 @@ JNIEXPORT void JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_encode
         av_free_packet(&pkt);
         LOGI("Succeed to encode frame: %d", frame_count);
     }
+}
+
+JNIEXPORT void JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_encode
+        (JNIEnv *env, jobject thiz, jbyteArray data) {
+    //jbyteArray转为jbyte*
+    jbyte *data_p = (*env)->GetByteArrayElements(env, data, NULL);
+
+    long long start = get_now();
+    encode((uint8_t *) data_p);
+    int d = (int) (get_now() - start);
+    LOGI("cost: %dms, fps: %.1f", d, 1000 / (float) d);
+
+    (*env)->ReleaseByteArrayElements(env, data, data_p, NULL);
 }
 
 static int flush_encoder(AVFormatContext *fmt_ctx, unsigned int stream_index) {
