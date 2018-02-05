@@ -8,8 +8,8 @@ buildscript {
     ext.targetSdkVersion = 26
     ext.supportVersion = "26.0.0"
     //应用版本号
-    ext.versionCode = 46
-    ext.versionName = "2.7"
+    ext.versionCode = 1
+    ext.versionName = "1.0"
 
     repositories {
         google()
