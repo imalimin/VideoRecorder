@@ -140,6 +140,10 @@ JNIEXPORT jint JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_init
     y_size = pCodecCtx->width * pCodecCtx->height;
 
     buffer = malloc(sizeof(uint8_t) * (width * height * 3 / 2));
+    if (NULL == buffer) {
+        LOGE("malloc failed!");
+        return -1;
+    }
     return 0;
 }
 
@@ -200,6 +204,7 @@ static int flush_encoder(AVFormatContext *fmt_ctx, unsigned int stream_index) {
 
 JNIEXPORT void JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_flush
         (JNIEnv *env, jobject thiz) {
+    free(buffer);
     //Flush Encoder
     if (pFormatCtx) {
         int ret = flush_encoder(pFormatCtx, 0);
