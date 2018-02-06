@@ -5,10 +5,15 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/contentLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <com.lmy.ffmpeg.widget.RecordView
+            android:id="@+id/mRecordView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
