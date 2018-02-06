@@ -46,6 +46,7 @@ class RecordView : ScalableTextureView2, Camera.PreviewCallback, TextureView.Sur
 
     override fun onPreviewFrame(data: ByteArray?, p1: Camera?) {
         if (!start) return
+        Log.v(TAG, "onPreviewFrame: $count")
         ++count
         mVideoEncoder?.encode2(data)
     }
@@ -62,7 +63,7 @@ class RecordView : ScalableTextureView2, Camera.PreviewCallback, TextureView.Sur
 
     override fun onSurfaceTextureDestroyed(p0: SurfaceTexture?): Boolean {
         mCameraWrapper?.stopCamera()
-        mVideoEncoder?.flush()
+        mVideoEncoder?.flush2()
         return true
     }
 
