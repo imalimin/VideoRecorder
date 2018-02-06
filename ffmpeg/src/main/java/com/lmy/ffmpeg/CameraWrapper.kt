@@ -86,6 +86,7 @@ class CameraWrapper private constructor(expectWidth: Int, expectHeight: Int, fac
         if (rate > frameRatesRang[1])
             rate = frameRatesRang[1]
         params.setPreviewFpsRange(rate, rate)
+        Log.v(TAG, "rate: $rate, ${frameRatesRang[0]}, ${frameRatesRang[1]}")
     }
 
     //设置最佳分辨率，大于或等于
