@@ -102,7 +102,7 @@ public class VideoEncoder {
         private FrameQueue mFrameQueue;
         private boolean mStop = false;
 
-        public EncodeThread(VideoEncoder videoEncoder, FrameQueue frameQueue) {
+        EncodeThread(VideoEncoder videoEncoder, FrameQueue frameQueue) {
             this.mVideoEncoder = videoEncoder;
             this.mFrameQueue = frameQueue;
         }
@@ -123,7 +123,7 @@ public class VideoEncoder {
             }
         }
 
-        public void stopProxy() {
+        void stopProxy() {
             mStop = true;
         }
     }
@@ -147,30 +147,26 @@ public class VideoEncoder {
             }
         }
 
-        public int getBufferSize() {
-            return bufferSize;
-        }
-
-        public int getRecycleSize() {
+        int getRecycleSize() {
             synchronized (mRecycleQueue) {
                 return mRecycleQueue.size();
             }
         }
 
-        public FrameBuffer getCacheBuffer() {
+        FrameBuffer getCacheBuffer() {
             synchronized (mRecycleQueue) {
                 return mRecycleQueue.poll();
             }
         }
 
-        public void offer(FrameBuffer buffer) {
+        void offer(FrameBuffer buffer) {
             synchronized (mQueue) {
                 buffer.setRecycled(false);
                 mQueue.offer(buffer);
             }
         }
 
-        public FrameBuffer poll() {
+        FrameBuffer poll() {
             synchronized (mQueue) {
                 FrameBuffer buffer = mQueue.poll();
                 if (null == buffer) return null;
@@ -178,7 +174,7 @@ public class VideoEncoder {
             }
         }
 
-        public void recycle(FrameBuffer buffer) {
+        void recycle(FrameBuffer buffer) {
             buffer.setRecycled(true);
             mRecycleQueue.offer(buffer);
         }
@@ -198,7 +194,7 @@ public class VideoEncoder {
         private byte[] mBuffer;
         private boolean recycled = true;
 
-        public FrameBuffer(int size) {
+        FrameBuffer(int size) {
             mBuffer = new byte[size];
         }
 
@@ -214,7 +210,7 @@ public class VideoEncoder {
             return recycled;
         }
 
-        public void setRecycled(boolean recycled) {
+        void setRecycled(boolean recycled) {
             recycled = recycled;
         }
     }
