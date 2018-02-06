@@ -170,6 +170,10 @@ public class VideoEncoder {
             synchronized (mQueue) {
                 FrameBuffer buffer = mQueue.poll();
                 if (null == buffer) return null;
+                if (buffer.isRecycled()) {
+                    recycle(buffer);
+                    return null;
+                }
                 return buffer;
             }
         }
@@ -202,8 +206,8 @@ public class VideoEncoder {
             return mBuffer;
         }
 
-        public void setBuffer(byte[] mBuffer) {
-            this.mBuffer = mBuffer;
+        public void setBuffer(byte[] buffer) {
+            this.mBuffer = buffer;
         }
 
         public boolean isRecycled() {
@@ -211,7 +215,7 @@ public class VideoEncoder {
         }
 
         void setRecycled(boolean recycled) {
-            recycled = recycled;
+            this.recycled = recycled;
         }
     }
 }
