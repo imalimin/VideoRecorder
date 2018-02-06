@@ -6,7 +6,9 @@ import android.hardware.Camera
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.TextureView
+import android.view.View
 import android.widget.ImageView
 import com.lmy.ffmpeg.CameraWrapper
 import com.lmy.ffmpeg.codec.VideoEncoder
@@ -14,7 +16,9 @@ import com.lmy.ffmpeg.codec.VideoEncoder
 /**
  * Created by limin on 2018/2/6.
  */
-class RecordView : ScalableTextureView2, Camera.PreviewCallback, TextureView.SurfaceTextureListener {
+class RecordView : ScalableTextureView2, Camera.PreviewCallback, TextureView.SurfaceTextureListener,
+        View.OnTouchListener {
+
     companion object {
         private val TAG = "RecordView"
     }
@@ -42,6 +46,16 @@ class RecordView : ScalableTextureView2, Camera.PreviewCallback, TextureView.Sur
 
     private fun apply(attrs: AttributeSet?, defStyleAttr: Int) {
         surfaceTextureListener = this
+        setOnTouchListener(this)
+    }
+
+    override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
+        when (p1?.action) {
+            MotionEvent.ACTION_UP -> {
+                mCameraWrapper?.focus(0.5f, 0.5f, Camera.AutoFocusCallback { p0, p1 -> })
+            }
+        }
+        return true
     }
 
     override fun onPreviewFrame(data: ByteArray?, p1: Camera?) {
