@@ -1,6 +1,7 @@
 package com.lmy.ffmpeg
 
 import android.graphics.PixelFormat
+import android.graphics.Rect
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
 import android.util.Log
@@ -180,15 +181,49 @@ class CameraWrapper private constructor(expectWidth: Int, expectHeight: Int, fac
         return mCameraSize!!
     }
 
-    //保证从大到小排列
-    private val descComparator = Comparator<Camera.Size> { lhs, rhs ->
-        val w = rhs.width - lhs.width
-        if (w == 0) rhs.height - lhs.height else w
+    fun focus(x: Float, y: Float, callback: Camera.AutoFocusCallback) {
+        focusAtPoint(x, y, 0.2f, callback)
     }
 
-    //保证从小到大排列
-    private val ascComparator = Comparator<Camera.Size> { lhs, rhs ->
-        val w = lhs.width - rhs.width
-        if (w == 0) lhs.height - rhs.height else w
+    @Synchronized
+    private fun focusAtPoint(x: Float, y: Float, radius: Float, callback: Camera.AutoFocusCallback) {
+        if (mCamera == null) {
+            Log.e(TAG, "Error: focus after release.")
+            return
+        }
+        val params = mCamera!!.parameters
+        if (params.maxNumMeteringAreas > 0) {
+
+            val focusRadius = (radius * 1000.0f).toInt()
+            val left = (x * 2000.0f - 1000.0f).toInt() - focusRadius
+            val top = (y * 2000.0f - 1000.0f).toInt() - focusRadius
+
+            val focusArea = Rect()
+            focusArea.left = Math.max(left, -1000)
+            focusArea.top = Math.max(top, -1000)
+            focusArea.right = Math.min(left + focusRadius, 1000)
+            focusArea.bottom = Math.min(top + focusRadius, 1000)
+            val meteringAreas = ArrayList<Camera.Area>()
+            meteringAreas.add(Camera.Area(focusArea, 800))
+
+            try {
+                mCamera!!.cancelAutoFocus()
+                params.focusMode = Camera.Parameters.FOCUS_MODE_AUTO
+                params.focusAreas = meteringAreas
+                mCamera!!.parameters = params
+                mCamera!!.autoFocus(callback)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error: focusAtPoint failed: " + e.toString())
+            }
+
+        } else {
+            Log.i(TAG, "The device does not support metering areas...")
+            try {
+                mCamera!!.autoFocus(callback)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error: focusAtPoint failed: " + e.toString())
+            }
+
+        }
     }
 }
