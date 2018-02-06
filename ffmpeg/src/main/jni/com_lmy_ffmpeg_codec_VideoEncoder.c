@@ -105,7 +105,7 @@ static int init(jint s_w, jint s_h, jint w, jint h) {
     pCodecCtx->gop_size = 250;
 
     pCodecCtx->time_base.num = 1;
-    pCodecCtx->time_base.den = 25;
+    pCodecCtx->time_base.den = 24;
 
     pCodecCtx->qmin = 10;
     pCodecCtx->qmax = 51;
