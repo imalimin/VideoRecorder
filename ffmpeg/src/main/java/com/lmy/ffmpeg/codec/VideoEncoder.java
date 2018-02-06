@@ -115,13 +115,11 @@ public class VideoEncoder {
                     mVideoEncoder.encode(buffer.getBuffer());
                     mFrameQueue.recycle(buffer);
                     Log.i(TAG, "encoded");
-                    //continue;
                 }
                 if (mStop) {
                     mVideoEncoder.flush();
                     return;
                 }
-                //Log.i(TAG, "waiting");
             }
         }
 
