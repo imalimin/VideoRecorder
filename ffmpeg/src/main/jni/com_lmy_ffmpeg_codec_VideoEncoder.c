@@ -45,7 +45,6 @@ int y_size;
 int frame_count = 0;
 int width = 0, height = 0;
 int src_width = 0, src_height = 0;
-const uint8_t *buffer;
 
 static long long get_now() {
     struct timeval xTime;
@@ -54,19 +53,19 @@ static long long get_now() {
     return (xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000);
 }
 
-static void crop_frame(uint8_t *src) {
-    int i = 0, offset = (src_width - height) / 2;
-    for (i = 0; i < src_height * 1.5; i++) {
-        memcpy(buffer + i * height, src + i * src_width + offset, height);
-    }
-}
+//static void crop_frame(uint8_t *src) {
+//    int i = 0, offset = (src_width - height) / 2;
+//    for (i = 0; i < src_height * 1.5; i++) {
+//        memcpy(buffer + i * height, src + i * src_width + offset, height);
+//    }
+//}
 
 static void convert_frame(uint8_t *src) {
     //1280x720 crop to 480x720
-    crop_frame(src);
+//    crop_frame(src);
     //480x720 rotate to 720x480
-    NV12ToI420Rotate(buffer, height,
-                     buffer + y_size, height,
+    NV12ToI420Rotate(src, height,
+                     src + y_size, height,
                      pFrame->data[0], width,
                      pFrame->data[2], width / 2,
                      pFrame->data[1], width / 2,
@@ -142,11 +141,6 @@ static int init(jint s_w, jint s_h, jint w, jint h) {
     av_new_packet(&pkt, picture_size);
     y_size = pCodecCtx->width * pCodecCtx->height;
 
-    buffer = malloc(sizeof(uint8_t) * (width * height * 3 / 2));
-    if (NULL == buffer) {
-        LOGE("malloc failed!");
-        return -1;
-    }
     return 0;
 }
 
@@ -228,7 +222,6 @@ static int flush_encoder(AVFormatContext *fmt_ctx, unsigned int stream_index) {
 
 JNIEXPORT void JNICALL Java_com_lmy_ffmpeg_codec_VideoEncoder_flush
         (JNIEnv *env, jobject thiz) {
-    free(buffer);
     //Flush Encoder
     if (pFormatCtx) {
         int ret = flush_encoder(pFormatCtx, 0);
